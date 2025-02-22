@@ -2,7 +2,11 @@
 #define UTILS_H
 
 #include <opencv2/opencv.hpp>
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <dirent.h>
+#endif
 
 static inline cv::Mat preprocess_img(cv::Mat& img, int input_w, int input_h) {
     int w, h, x, y;

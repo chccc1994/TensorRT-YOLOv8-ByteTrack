@@ -3,7 +3,11 @@
 
 #include <iostream>
 #include <fstream>
-#include <unistd.h>
+#ifdef _WIN32
+#include <windows.h>  // For Windows specific functionality
+#else
+#include <unistd.h>   // For Linux specific functionality
+#endif
 #include <string.h>
 #include <cmath>
 #include <iomanip>

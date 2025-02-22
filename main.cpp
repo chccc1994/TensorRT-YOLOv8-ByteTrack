@@ -30,7 +30,7 @@ int run(char* videoPath)
     cv::VideoWriter writer("result.mp4", VideoWriter::fourcc('m', 'p', '4', 'v'), fps, Size(img_w, img_h));
 
     // YOLOv8 predictor
-    std::string trtFile = "../yolo/engine/yolov8s.engine";
+    std::string trtFile = "D:/Programs/engine/yolov8s.engine";
     YoloDetecter detecter(trtFile);
     
     // ByteTrack tracker
@@ -92,7 +92,7 @@ int run(char* videoPath)
                 cv::Point(0, 30), 0, 0.6, cv::Scalar(0, 0, 255), 2, cv::LINE_AA);
         writer.write(img);
 
-        // cv::imshow("img", img);
+        cv::imshow("img", img);
         int c = cv::waitKey(1);
 	if (c == 27) break;  // ESC to exit
     }

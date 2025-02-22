@@ -1,14 +1,7 @@
-#include <iostream>
-#include <fstream>
-
 #include "yolov8_lib.h"
-#include "preprocess.h"
-#include "postprocess.h"
-
-using namespace nvinfer1;
-
 
 YoloDetecter::YoloDetecter(const std::string trtFile): trtFile_(trtFile)
+// YoloDetecter::YoloDetecter(const std::string trtFile)
 {
     gLogger = Logger(ILogger::Severity::kERROR);
     cudaSetDevice(kGpuId);
@@ -35,6 +28,18 @@ YoloDetecter::YoloDetecter(const std::string trtFile): trtFile_(trtFile)
         CUDA_CHECK(cudaMalloc(&vBufferD[i], vTensorSize[i]));
     }
 }
+YoloDetecter::~YoloDetecter() {
+    cudaStreamDestroy(stream);
+    for (void* ptr : vBufferD) {
+        CUDA_CHECK(cudaFree(ptr));
+    }
+    // 正确释放 TensorRT 对象
+    if (context) context->destroy();
+    if (engine) engine->destroy();
+    if (runtime) runtime->destroy();
+    delete[] inputData;
+    delete[] outputData;
+}
 
 void YoloDetecter::deserialize_engine()
 {
@@ -58,22 +63,6 @@ void YoloDetecter::deserialize_engine()
     delete[] serialized_engine;
 }
 
-YoloDetecter::~YoloDetecter()
-{
-    cudaStreamDestroy(stream);
-
-    for (int i = 0; i < 2; ++i)
-    {
-        CUDA_CHECK(cudaFree(vBufferD[i]));
-    }
-
-    delete context;
-    delete engine;
-    delete runtime;
-
-    delete [] inputData;
-    delete [] outputData;
-}
 
 void YoloDetecter::inference()
 {

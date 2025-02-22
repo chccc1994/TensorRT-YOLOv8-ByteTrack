@@ -1,4 +1,8 @@
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <dirent.h>
+#endif
 #include "utils.h"
 #include "yolov8_lib.h"
 
@@ -13,7 +17,7 @@ int run(char* imageDir)
     }
 
     // create detecter, and load engine plan
-    std::string trtFile = "./engine/yolov8s.engine";
+    std::string trtFile = "D:/Programs/engine/yolov8s.engine";
     YoloDetecter detecter(trtFile);
 
     // inference

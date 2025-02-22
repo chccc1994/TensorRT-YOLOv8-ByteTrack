@@ -1,12 +1,24 @@
 #ifndef YOLOV8_LIB
 #define YOLOV8_LIB
 
+#ifdef _WIN32
+#ifdef YOLODETECTER_EXPORTS
+#define YOLO_API __declspec(dllexport)
+#else
+#define YOLO_API __declspec(dllimport)
+#endif
+#else
+#define YOLO_API
+#endif
+
+#include <iostream>
+#include <fstream>
 #include <opencv2/opencv.hpp>
 #include "public.h"
 #include "yololayer.h"
-
+#include "preprocess.h"
+#include "postprocess.h"
 using namespace nvinfer1;
-
 
 struct DetectResult
 {
@@ -16,7 +28,7 @@ struct DetectResult
 };
 
 
-class YoloDetecter
+class YOLO_API YoloDetecter
 {
 public:
     YoloDetecter(const std::string trtFile);
