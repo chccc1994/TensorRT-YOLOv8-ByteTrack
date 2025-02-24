@@ -36,6 +36,9 @@ int run(char* videoPath)
     // ByteTrack tracker
     BYTETracker tracker(fps, 30);
 
+    // 初始化轨迹点存储结构
+    std::map<int, std::vector<cv::Point>> track_paths;
+
     cv::Mat img;
     int num_frames = 0;
     int total_ms = 0;
@@ -86,7 +89,16 @@ int run(char* videoPath)
 				cv::putText(img, cv::format("%d", output_stracks[i].track_id), cv::Point(tlwh[0], tlwh[1] - 5), 
                         0, 0.6, cv::Scalar(0, 0, 255), 2, cv::LINE_AA);
                 cv::rectangle(img, cv::Rect(tlwh[0], tlwh[1], tlwh[2], tlwh[3]), s, 2);
-			}
+                
+                // 更新轨迹点
+                cv::Point center(tlwh[0] + tlwh[2] / 2, tlwh[1] + tlwh[3] / 2);
+                track_paths[output_stracks[i].track_id].push_back(center);
+
+                // 绘制轨迹
+                if (track_paths[output_stracks[i].track_id].size() > 1) {
+                    cv::polylines(img, track_paths[output_stracks[i].track_id], false, s, 2);
+                }
+            }
 		}
         cv::putText(img, cv::format("frame: %d fps: %d num: %ld", num_frames, num_frames * 1000000 / total_ms, output_stracks.size()), 
                 cv::Point(0, 30), 0, 0.6, cv::Scalar(0, 0, 255), 2, cv::LINE_AA);
@@ -104,15 +116,18 @@ int run(char* videoPath)
 }
 
 
-int main(int argc, char *argv[])
-{
-    if (argc != 2 )
-    {
-        std::cerr << "arguments not right!" << std::endl;
-        std::cerr << "Usage: ./main [video path]" << std::endl;
-        std::cerr << "Example: ./main ./test_videos/demo.mp4" << std::endl;
-        return -1;
-    }
+// int main(int argc, char *argv[])
+// {
+//     if (argc != 2 )
+//     {
+//         std::cerr << "arguments not right!" << std::endl;
+//         std::cerr << "Usage: ./main [video path]" << std::endl;
+//         std::cerr << "Example: ./main ./test_videos/demo.mp4" << std::endl;
+//         return -1;
+//     }
 
-    return run(argv[1]);
+//     return run(argv[1]);
+// }
+int main(){
+    return run("D:/Programs/videos/door4.mp4");
 }
